@@ -70,7 +70,7 @@ namespace TestTaskMSSQL
 
             try
             {
-                var employeeId = ReadInt("Введите Id работника, которого хотите обновить:");
+                var employeeId = ReadInt("Введите Id работника, которого хотите обновить");
 
 
                 var employee = await _Service.Get(employeeId);
@@ -82,8 +82,8 @@ namespace TestTaskMSSQL
                 }
 
 
-                Console.WriteLine(employee);
-                Console.WriteLine();
+                Console.WriteLine(employee.print());
+                
 
                 var (fieldName, newValue) = ReadUpdateField();
                 if (fieldName == null) return;
@@ -112,7 +112,7 @@ namespace TestTaskMSSQL
 
             try
             {
-                var employeeId = ReadInt("Введите Id работника для удаления:");
+                var employeeId = ReadInt("Введите Id работника для удаления");
 
                 var employee = await _Service.Get(employeeId);
 
@@ -241,15 +241,15 @@ namespace TestTaskMSSQL
 
             while (true)
             {
-                Console.Write("Неверная цифра!");
+                Console.Write("Выберите цифру:");
                 var choice = Console.ReadLine();
 
                 switch (choice)
                 {
                     case "1":
-                        return ("FirstName", ReadString("Новое имя:"));
+                        return ("FirstName", ReadString("Новое имя"));
                     case "2":
-                        return ("LastName", ReadString("Новая фамилия:"));
+                        return ("LastName", ReadString("Новая фамилия"));
                     case "3":
                         return ("Email", ReadString("Новый Email"));
                     case "4":
@@ -269,7 +269,7 @@ namespace TestTaskMSSQL
         {
             Console.Write("Нажмите клавишу для выхода ....");
             Console.ReadKey();
-            Console.WriteLine("**********Пока!**********");
+            Console.WriteLine("**********Пока!**************");
         }
     }
 }
