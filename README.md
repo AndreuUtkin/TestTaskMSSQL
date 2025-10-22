@@ -1,7 +1,8 @@
 # C# консольное приложение с с подключением к MS SQL Server
 # Обновление Update
-![Uploading image.png…]()
-![Uploading image.png…]()
+<img width="841" height="265" alt="image" src="https://github.com/user-attachments/assets/21236244-3bb3-4187-b515-69dd55fd068b" />
+<img width="917" height="103" alt="image" src="https://github.com/user-attachments/assets/c54d76c6-20fc-447f-89ec-ec6acb1c52a8" />
+
 
 # Немного о проекте:
 Данное приложение создано в соотвестствии с ТЗ и включает в себя следующие классы(не считая интерфейсов):
