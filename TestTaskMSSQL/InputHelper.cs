@@ -70,34 +70,48 @@ namespace TestTaskMSSQL
 
             try
             {
-                var employeeId = ReadInt("Введите Id работника, которого хотите обновить");
-
+                var employeeId = ReadInt("Введите ID работника, которого хотите обновить");
 
                 var employee = await _Service.Get(employeeId);
 
                 if (employee == null)
                 {
-                    Console.WriteLine("Нет такого");
+                    Console.WriteLine("Нет такого работника.");
                     return;
                 }
 
+                Console.WriteLine("Исходные данные работника:\n" + employee.print());
+                Console.WriteLine("Введите новые данные, если старые данные устраивают жмите Enter");
+                Console.Write($"Имя [{employee.FirstName}] : ");
+                var firstNameInput = Console.ReadLine()?.Trim();
+                if (!string.IsNullOrEmpty(firstNameInput)) employee.FirstName = firstNameInput;
 
-                Console.WriteLine(employee.print());
-                
+                Console.Write($"Фамилия [{employee.LastName}] : ");
+                var lastNameInput = Console.ReadLine()?.Trim();
+                if (!string.IsNullOrEmpty(lastNameInput)) employee.LastName = lastNameInput;
 
-                var (fieldName, newValue) = ReadUpdateField();
-                if (fieldName == null) return;
+                Console.Write($"Email [{employee.Email}] : ");
+                var emailInput = Console.ReadLine()?.Trim();
+                if (!string.IsNullOrEmpty(emailInput)) employee.Email = emailInput;
 
+                Console.Write($"Дата рождения [{employee.DateOfBirth.ToString("yyyy-MM-dd")}] : ");
+                var dateOfBirthInput = Console.ReadLine()?.Trim();
+                if (!string.IsNullOrEmpty(dateOfBirthInput)) employee.DateOfBirth = DateTime.ParseExact(dateOfBirthInput, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-                var success = await _Service.Update(employeeId, fieldName, newValue);
+                Console.Write($"Зарплата [{employee.Salary}] : ");
+                var salaryInput = Console.ReadLine()?.Trim();
+                if (!string.IsNullOrEmpty(salaryInput)) employee.Salary = decimal.Parse(salaryInput);
+
+                // Отправляем полностью обновлённого сотрудника на сервер
+                var success = await _Service.Update(employee);
 
                 if (success)
                 {
-                    Console.WriteLine("Работик успешно обновлен");
+                    Console.WriteLine("Работник успешно обновлён!");
                 }
                 else
                 {
-                    Console.WriteLine("Не удалось обновить работника");
+                    Console.WriteLine("Не удалось обновить работника.");
                 }
             }
             catch (Exception ex)

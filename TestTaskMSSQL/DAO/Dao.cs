@@ -79,21 +79,29 @@ namespace TestTaskMSSQL.DAO
             return employees;
         }
 
-        public async Task<bool> Update(int employeeId, string field, object value)
+        public async Task<bool> Update(int employeeId, Dictionary<string, object> updates)
         {
             var allowedFields = new[] { "FirstName", "LastName", "Email", "DateOfBirth", "Salary" };
-            if (!allowedFields.Contains(field))
-                throw new ArgumentException("Неверное имя");
+            foreach (var key in updates.Keys)
+            {
+                if (!allowedFields.Contains(key))
+                    throw new ArgumentException($"Некорректное имя поля '{key}'");
+            }
 
-            var query = $"UPDATE Employees SET {field} = @Value WHERE EmployeeID = @EmployeeID";
+            var fieldsToUpdate = string.Join(", ", updates.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
+            var query = $"UPDATE Employees SET {fieldsToUpdate} WHERE EmployeeID = @EmployeeID";
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
-            if (value is DateTime dateValue)
-                value = dateValue.ToString("yyyy-MM-dd");
-
-            command.Parameters.AddWithValue("@Value", value ?? DBNull.Value);
+            foreach (var field in updates)
+            {
+                // Преобразуем дату в нужный формат, если это значение типа DateTime
+                if (field.Value is DateTime dateValue)
+                    command.Parameters.AddWithValue($"@{field.Key}", dateValue.ToString("yyyy-MM-dd"));
+                else
+                    command.Parameters.AddWithValue($"@{field.Key}", field.Value ?? DBNull.Value);
+            }
             command.Parameters.AddWithValue("@EmployeeID", employeeId);
 
             await connection.OpenAsync();

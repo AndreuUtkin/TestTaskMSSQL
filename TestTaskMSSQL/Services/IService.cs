@@ -13,7 +13,7 @@ namespace TestTaskMSSQL.Services
         Task<int> Create(string firstName, string lastName, string email, DateTime dateOfBirth, decimal salary);
         Task<List<Employee>> GetAll();
         Task<Employee> Get(int employeeId);
-        Task<bool> Update(int employeeId, string field, object value);
+        Task<bool> Update(Employee updatedEmployee);
         Task<bool> Delete(int employeeId);
         Task<int> HighSalary();
         

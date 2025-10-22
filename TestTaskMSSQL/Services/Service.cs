@@ -93,28 +93,53 @@ namespace TestTaskMSSQL.Services
             return await _Dao.GetAll();
         }
         //обновление работника
-        public async Task<bool> Update(int employeeId, string field, object value)
+        public async Task<bool> Update(Employee updatedEmployee)
         {
-            var existingEmployee = await _Dao.Get(employeeId);
+            var existingEmployee = await _Dao.Get(updatedEmployee.EmployeeID);
+
             if (existingEmployee == null)
-                throw new ArgumentException("Работник не найден");
+                return false; 
 
-            if (field == "Email" && value is string email)
+            if (AreObjectsEqual(existingEmployee, updatedEmployee))
+                throw new ArgumentException("Объекты идентичны");
+
+            // Предварительная проверка валидности
+            if (string.IsNullOrWhiteSpace(updatedEmployee.Email))
+                throw new ArgumentException("Нет email");
+
+            if (!IsValidEmail(updatedEmployee.Email))
+                throw new ArgumentException("Неправильный email");
+
+            if (updatedEmployee.Salary < 0)
+                throw new ArgumentException("Зарплата не может быть отрицательной");
+
+            Dictionary<string, object> updates = new Dictionary<string, object>();
+            CollectUpdates(updates, existingEmployee, updatedEmployee);
+
+            return await _Dao.Update(updatedEmployee.EmployeeID, updates);
+        }
+        private bool AreObjectsEqual(Employee a, Employee b)
+        {
+            foreach (var property in typeof(Employee).GetProperties())
             {
-                if (string.IsNullOrWhiteSpace(email))
-                    throw new ArgumentException("Нет email");
-
-                if (!IsValidEmail(email))
-                    throw new ArgumentException("Неправильный email");
+                if (!Equals(property.GetValue(a), property.GetValue(b)))
+                    return false;
             }
+            return true;
+        }
 
-            if (field == "Salary" && value is decimal salary)
+        private void CollectUpdates(Dictionary<string, object> updates, Employee oldEmp, Employee newEmp)
+        {
+            foreach (var propInfo in typeof(Employee).GetProperties())
             {
-                if (salary < 0)
-                    throw new ArgumentException("Зарплата не может быть отрицательной");
-            }
+                var oldVal = propInfo.GetValue(oldEmp);
+                var newVal = propInfo.GetValue(newEmp);
 
-            return await _Dao.Update(employeeId, field, value);
+                if (!Equals(oldVal, newVal))
+                {
+                    updates.Add(propInfo.Name, newVal);
+                }
+            }
         }
         //удаление работника
         public async Task<bool> Delete(int employeeId)

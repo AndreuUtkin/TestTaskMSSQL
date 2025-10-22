@@ -13,7 +13,7 @@ namespace TestTaskMSSQL.DAO
         Task<int> Create(Employee employee);
         Task<List<Employee>> GetAll();
         Task<Employee> Get(int employeeId);
-        Task<bool> Update(int employeeId, string field, object value);
+        Task<bool> Update(int employeeId, Dictionary<string, object> updates);
         Task<bool> Delete(int employeeId);
         Task<int> HighSalary();
         
